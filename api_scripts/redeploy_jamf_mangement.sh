@@ -26,7 +26,7 @@ for id in "${needs_update[@]}"; do
   response=$(curl -X 'POST' \
     "$jamfurl/api/v1/jamf-management-framework/redeploy/$id" \
     -H 'accept: application/json' \
-    -H "Authorization: Bearer $bearerToken" \
+    -H "Authorization: Bearer $token" \
     -d '' 2>&1)  # Redirect both stdout and stderr to capture the response
   
   if [[ $response == *"httpStatus"* && $response == *"500"* ]]; then
@@ -41,7 +41,7 @@ for id in "${needs_update[@]}"; do
     success_number+=1
   fi
     
-  checkTokenExpiration
+  validateToken
 done
 
 # Final report and exit
