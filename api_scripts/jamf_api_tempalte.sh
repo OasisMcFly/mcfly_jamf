@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 #Global Variables
 jamfUser=""
@@ -42,13 +42,7 @@ invalidateToken() {
 # Main Script Logic
 
 validateToken
-echo "Printing Test Output..."
-echo "token: $token"
-echo "tokenExpiration: $tokenExpiration"
-echo "tokenExpirationEpoch: $tokenExpirationEpoch"
-echo "current_epoch: $current_epoch"
 
-echo "Fetching Jamf Pro Version..."
-curl -s -H "Authorization: Bearer ${token}" $jamfurl/api/v1/jamf-pro-version -X GET
+# some code
 
 invalidateToken
