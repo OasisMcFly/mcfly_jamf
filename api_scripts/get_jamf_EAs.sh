@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# -----------------------------------------------------------------------------
-# This script uses the Jamf Pro API to identify the IDs of computer extension 
+#---------------------------
+# This script uses the Jamf Pro API to identify the IDs of computer extension
 # attributes on a Jamf Pro server and performs the following:
 #
 # 1. Downloads each as XML
@@ -9,27 +9,27 @@
 # 3. Categorizes the downloaded extension attributes
 # 4. If it's a macOS EA with a script, extracts the script
 # 5. Saves any scritps as .sh or .py files by type
-# -----------------------------------------------------------------------------
+#---------------------------
 
-# -----------------------------------------------------------------------------
+#---------------------------
 # USER CONFIGURATION - REQUIRED
 # Set these values before running the script
-# -----------------------------------------------------------------------------
+#---------------------------
 jamfUser=""         # Jamf Pro API username with sufficient read permissions
 jamfPass=""         # Jamf Pro API password
 jamfurl=""          # Full Jamf Pro URL (e.g. https://yourcompany.jamfcloud.com)
 ea_download_dir="/path/to/folder/extension_attributes"  # Local path to save output files
 
-# -----------------------------------------------------------------------------
+#---------------------------
 # Global Variables - Do not edit these
 # These will be populated by the script
 token=""
 tokenExpirationEpoch="0"
 current_epoch=""
 
-# -----------------------------------------------------------------------------
+#---------------------------
 # Jamf API Bearertoken Script Functions
-# -----------------------------------------------------------------------------
+#---------------------------
 
 # Requests a bearer token from the Jamf Pro API using the provided username and password.
 getToken() {
@@ -58,7 +58,7 @@ invalidateToken() {
     token=""
     tokenExpirationEpoch="0"
   elif [[ ${responseCode} == 401 ]]; then
-	echo "Token already invalid"  
+	echo "Token already invalid"
   else
     echo "An unknown error occurred invalidating the token"
   fi
@@ -66,9 +66,9 @@ invalidateToken() {
   jamfPass=""
 }
 
-# -----------------------------------------------------------------------------
+#---------------------------
 # Script Specific Functions
-# -----------------------------------------------------------------------------
+#---------------------------
 
 # Download the extension attribute information as raw XML,
 # then format it to be readable.
@@ -135,14 +135,14 @@ DownloadComputerExtensionAttribute(){
 			FinalAttribute="$FormattedComputerExtensionAttribute"
 		fi
 		echo "$FinalAttribute" | perl -MHTML::Entities -pe 'decode_entities($_);' > "$ea_download_dir/$FileName"
-	else 
+	else
 		echo "Error: Unable to determine the attribute's input type"
 	fi
 }
 
-# -----------------------------------------------------------------------------
+#---------------------------
 # Main Script Logic
-# -----------------------------------------------------------------------------
+#---------------------------
 
 validateToken
 mkdir -p "$ea_download_dir"

@@ -1,16 +1,18 @@
 #!/bin/bash
 
-##############################################################################
+#---------------------------
 # Jamf Pro API Script: Fix Invalid Site Assignments
-##############################################################################
+#---------------------------
 
-# This script is designed to fix devices in Jamf that have an invalid/null site assignment.
-# It will check each device's site ID and update it to our companies default site if necessary.
+# This script is designed to fix devices in Jamf that have an invalid/null site assignment
+# for Jamf pro instances with multiple sites. It will check each device's site ID and update
+# it to our companies default site if necessary. This script uses xargs to process devices
+# in parallel, which can significantly speed up the process for large environments.
 
 
-##############################################################################
+#---------------------------
 # Global User Set Variables
-##############################################################################
+#---------------------------
 # Edit these as needed for your Jamf environment
 # Ensure you have the necessary permissions to run this script and access the Jamf Pro API.
 # Check your Jamf instance for the correct site ID to use based on your needs
@@ -20,17 +22,19 @@ jamfPass="" # Input your Jamf password here
 jamfurl="" # Input your Jamf Pro URL here, e.g., https://yourjamfpro.jamfcloud.com
 default_site_id="" # Set the default site ID # to use for devices with invalid assignments
 
-# Global Script Variables
+#---------------------------
+# Global Variables
+#---------------------------
 # Blank values will be populated by the script, do not edit these
-token="" 
+token=""
 tokenExpirationEpoch="0"
 currentEpoch=""
 jss_ids=()  # Array to store JSS IDs
 max_parallel_requests=10  # Limit the number of parallel processes to 10
 
-# Script Functions
-
-
+#---------------------------
+# Jamf BearerToken Functions
+#---------------------------
 getToken() {
   response=$(curl -s -u "$jamfUser":"$jamfPass" "$jamfurl"/api/v1/auth/token -X POST)
 	token=$(echo "$response" | plutil -extract token raw -)
@@ -53,13 +57,17 @@ invalidateToken() {
     token=""
     tokenExpirationEpoch="0"
   elif [[ ${responseCode} == 401 ]]; then
-		echo "Token already invalid"  
+		echo "Token already invalid"
   else
     echo "An unknown error occurred invalidating the token"
   fi
   jamfUser=""
   jamfPass=""
 }
+
+#---------------------------
+# Main Script Functions
+#---------------------------
 
 # Function to fetch all JSS IDs
 getAllJSSIDs() {
@@ -108,7 +116,9 @@ processJSSIDsInParallel() {
     printf "%s\n" "${jss_ids[@]}" | xargs -P $max_parallel_requests -I {} bash -c 'updateDeviceSite "$@"' _ {} "$token"
 }
 
-# Main Script Logic
+#---------------------------
+# Main Script Execution
+#---------------------------
 validateToken
 getAllJSSIDs
 echo "Total devices found: ${#jss_ids[@]}"

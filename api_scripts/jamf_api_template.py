@@ -1,4 +1,4 @@
-#!/usr/local/bin/managed_python3 
+#!/usr/local/bin/managed_python3
 
 """
 Jamf API Recipe Script
